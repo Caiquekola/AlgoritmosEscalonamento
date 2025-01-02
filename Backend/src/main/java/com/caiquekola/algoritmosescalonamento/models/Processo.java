@@ -1,24 +1,12 @@
 package com.caiquekola.algoritmosescalonamento.models;
 
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "type" // Define o campo que será usado para distinguir as subclasses
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = RoundRobin.class, name = "RoundRobin"),
-        @JsonSubTypes.Type(value = Fifo.class, name = "RoundRobin"),
+import java.io.Serializable;
 
-})
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class Processo {
+@MappedSuperclass
+public abstract class Processo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
