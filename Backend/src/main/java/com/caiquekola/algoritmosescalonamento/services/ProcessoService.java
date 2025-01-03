@@ -1,10 +1,10 @@
 package com.caiquekola.algoritmosescalonamento.services;
 
 import com.caiquekola.algoritmosescalonamento.models.Fifo;
+import com.caiquekola.algoritmosescalonamento.models.Processamento;
 import com.caiquekola.algoritmosescalonamento.models.Processo;
-import com.caiquekola.algoritmosescalonamento.models.ProcessoFactory;
+import com.caiquekola.algoritmosescalonamento.factories.ProcessoFactory;
 import com.caiquekola.algoritmosescalonamento.models.RoundRobin;
-import com.caiquekola.algoritmosescalonamento.repositories.ProcessamentoRepository;
 import com.caiquekola.algoritmosescalonamento.repositories.ProcessoRepository;
 import com.caiquekola.algoritmosescalonamento.services.exceptions.DataBindingViolationException;
 import com.caiquekola.algoritmosescalonamento.services.exceptions.ObjectNotFoundException;
@@ -12,16 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UnknownFormatFlagsException;
 
 @Service
 public class ProcessoService {
     //CRUD
     //GET POST UPDATE DELETE
-    @Autowired
-    ProcessamentoRepository processamentoRepository;
     @Autowired
     private ProcessoRepository processoRepository;
 
@@ -33,9 +29,23 @@ public class ProcessoService {
     //POST
     //arquitetura para atomicidade
     @Transactional
-    public Processo criar(Processo processo,String tipo){
+    public Processo criar(Processo processo, String tipo) {
+        System.out.println(processo + tipo);
         Processo novoProcesso = ProcessoFactory.criarProcesso(tipo);
-        novoProcesso.setId(null);
+        novoProcesso.setTempoProcessamento(processo.getTempoProcessamento());
+        novoProcesso.setTempoChegada(processo.getTempoChegada());
+        novoProcesso.setTempoEspera(processo.getTempoEspera());
+        novoProcesso.setTrocasContexto(processo.getTrocasContexto());
+
+        if (novoProcesso instanceof Fifo && processo instanceof Fifo) {
+            ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
+        } else if (novoProcesso instanceof RoundRobin && processo instanceof RoundRobin) {
+            ((RoundRobin) novoProcesso).setQuantum(((RoundRobin) processo).getQuantum());
+        } else if( novoProcesso instanceof Processamento && processo instanceof Processamento) {
+            ((Processamento) novoProcesso).setDuracao(((Processamento) processo).getDuracao());
+            ((Processamento) novoProcesso).setProcessos(((Processamento) processo).getProcessos());
+        }
+
         return processoRepository.save(novoProcesso);
     }
 

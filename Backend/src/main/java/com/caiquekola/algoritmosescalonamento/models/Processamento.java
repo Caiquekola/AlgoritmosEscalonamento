@@ -4,18 +4,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Data;
+import lombok.*;
 
+import java.util.List;
+
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
-public class Processamento {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Processamento extends Processo{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private List<Processo> processos;
+    private int duracao;
 
-    public int tempo_medio;
-    public int tempo_espera;
-    public int duracao;
-    public int trocas_contexto;
+    public List<Processo> getProcessos() {
+        return processos;
+    }
+
+    public void setProcessos(List<Processo> processos) {
+        this.processos = processos;
+    }
+
+    public int getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(int duracao) {
+        this.duracao = duracao;
+    }
 }

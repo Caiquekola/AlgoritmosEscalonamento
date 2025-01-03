@@ -1,11 +1,9 @@
 package com.caiquekola.algoritmosescalonamento.controllers;
 
 import com.caiquekola.algoritmosescalonamento.models.Processo;
-import com.caiquekola.algoritmosescalonamento.models.ProcessoFactory;
 import com.caiquekola.algoritmosescalonamento.services.ProcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,7 +36,9 @@ public class ProcessoController {
                     .buildAndExpand(novoProcesso.getId())
                     .toUri();
             return ResponseEntity.created(uri).build();
+//            return ResponseEntity.ok().body(null);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
