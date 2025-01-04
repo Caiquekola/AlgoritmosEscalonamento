@@ -14,15 +14,15 @@ import java.io.Serializable;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Fifo.class, name = "Fifo"),
-        @JsonSubTypes.Type(value = RoundRobin.class, name = "RoundRobin"),
-        @JsonSubTypes.Type(value = Processamento.class, name = "Processamento")
+        @JsonSubTypes.Type(value = RoundRobin.class, name = "RoundRobin")
 })
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Processo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int tempoProcessamento;
+    private int tempoExecucao;
     private int tempoChegada;
     @Column(nullable = true)
     private int tempoEspera;
@@ -37,12 +37,12 @@ public abstract class Processo implements Serializable {
         this.id = id;
     }
 
-    public int getTempoProcessamento() {
-        return tempoProcessamento;
+    public int getTempoExecucao() {
+        return tempoExecucao;
     }
 
-    public void setTempoProcessamento(int tempoProcessamento) {
-        this.tempoProcessamento = tempoProcessamento;
+    public void setTempoExecucao(int tempoProcessamento) {
+        this.tempoExecucao = tempoProcessamento;
     }
 
     public int getTempoChegada() {
@@ -73,7 +73,7 @@ public abstract class Processo implements Serializable {
     public String toString() {
         return "Processo{" +
                 "id=" + id +
-                ", tempoProcessamento=" + tempoProcessamento +
+                ", tempoProcessamento=" + tempoExecucao +
                 ", tempoChegada=" + tempoChegada +
                 ", tempoEspera=" + tempoEspera +
                 ", trocasContexto=" + trocasContexto +

@@ -12,6 +12,8 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/processo")
+//localhost:8080/processo
+
 public class ProcessoController {
     @Autowired
     private ProcessoService processoService;
@@ -26,10 +28,11 @@ public class ProcessoController {
         Processo processo = processoService.encontrarPeloId(id);
         return ResponseEntity.ok().body(processo);
     }
-
+    //CREATE READ UPDATE DELETE //GET POST PUT DELETE
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody Processo processo, @RequestParam String tipo) {
         try {
+
             Processo novoProcesso = processoService.criar(processo, tipo);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")

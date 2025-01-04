@@ -1,7 +1,6 @@
 package com.caiquekola.algoritmosescalonamento.services;
 
 import com.caiquekola.algoritmosescalonamento.models.Fifo;
-import com.caiquekola.algoritmosescalonamento.models.Processamento;
 import com.caiquekola.algoritmosescalonamento.models.Processo;
 import com.caiquekola.algoritmosescalonamento.factories.ProcessoFactory;
 import com.caiquekola.algoritmosescalonamento.models.RoundRobin;
@@ -32,7 +31,7 @@ public class ProcessoService {
     public Processo criar(Processo processo, String tipo) {
         System.out.println(processo + tipo);
         Processo novoProcesso = ProcessoFactory.criarProcesso(tipo);
-        novoProcesso.setTempoProcessamento(processo.getTempoProcessamento());
+        novoProcesso.setTempoExecucao(processo.getTempoExecucao());
         novoProcesso.setTempoChegada(processo.getTempoChegada());
         novoProcesso.setTempoEspera(processo.getTempoEspera());
         novoProcesso.setTrocasContexto(processo.getTrocasContexto());
@@ -41,9 +40,6 @@ public class ProcessoService {
             ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
         } else if (novoProcesso instanceof RoundRobin && processo instanceof RoundRobin) {
             ((RoundRobin) novoProcesso).setQuantum(((RoundRobin) processo).getQuantum());
-        } else if( novoProcesso instanceof Processamento && processo instanceof Processamento) {
-            ((Processamento) novoProcesso).setDuracao(((Processamento) processo).getDuracao());
-            ((Processamento) novoProcesso).setProcessos(((Processamento) processo).getProcessos());
         }
 
         return processoRepository.save(novoProcesso);
@@ -55,7 +51,7 @@ public class ProcessoService {
         //Reutilização do código find by id
         Processo novoProcesso = ProcessoFactory.criarProcesso(tipo);
         novoProcesso.setTempoChegada((processo.getTempoChegada()));
-        novoProcesso.setTempoProcessamento(processo.getTempoProcessamento());
+        novoProcesso.setTempoExecucao(processo.getTempoExecucao());
         novoProcesso.setTempoEspera(processo.getTempoEspera());
         novoProcesso.setTrocasContexto(processo.getTrocasContexto());
 

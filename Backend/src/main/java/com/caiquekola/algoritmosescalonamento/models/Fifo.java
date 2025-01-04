@@ -2,13 +2,11 @@ package com.caiquekola.algoritmosescalonamento.models;
 
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 public class Fifo extends Processo{
 
     private int prioridade;
