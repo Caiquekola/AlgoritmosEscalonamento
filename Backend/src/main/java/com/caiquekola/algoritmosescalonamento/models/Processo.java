@@ -22,8 +22,8 @@ public abstract class Processo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int tempoExecucao;
     private int tempoChegada;
+    private int tempoExecucao;
     @Column(nullable = true)
     private int tempoEspera;
     @Column(nullable = true)
