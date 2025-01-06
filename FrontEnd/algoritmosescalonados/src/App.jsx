@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AlgorithmSelector from "./components/AlgorithmSelector";
 import ProcessRow from "./components/ProcessRow";
+import axios from "axios";
 import "./App.css";
 
 const App = () => {
@@ -11,7 +12,7 @@ const App = () => {
   const addProcess = () => {
     setProcesses([
       ...processes,
-      { id: Date.now(), arrivalTime: "", executionTime: "", priority: "" },
+      { id: Date.now(), tempoChegada: "", tempoExecucao: "", prioridade: "" },
     ]);
   };
 
@@ -19,15 +20,29 @@ const App = () => {
     setProcesses(processes.filter((process) => process.id !== id));
   };
 
+  const handleAlgorithmChange = (newAlgorithm) => {
+    if (newAlgorithm !== algorithm) {
+      setAlgorithm(newAlgorithm);
+      setProcesses([]); // Limpa todos os processos
+    }
+  };
+
   const handleRun = async () => {
+    var algoritmo = algorithm;
     try {
       const payload = {
-        algorithm,
+        algoritmo,
         quantum: parseInt(quantum, 10),
-        processes: processes.map(({ id, ...rest }) => rest), // Remove o campo "id"
+
+        processos: processes.map(({ id, ...rest }) => (
+          {
+            ...rest,
+            tipo: algorithm === "fifo" ? "fifo" : "roundrobin",
+          })), // Remove o campo "id"
+        
       };
-  
-      const response = await axios.post("http://localhost:8080/scheduler/run", payload);
+
+      const response = await axios.post(`http://localhost:8080/processamento/rodar?tipo=${algorithm}`, payload);
       console.log("Resposta do backend:", response.data);
       alert("Resultado: " + response.data);
     } catch (error) {
@@ -46,7 +61,7 @@ const App = () => {
         <div className="algorithm-container">
           <AlgorithmSelector
             algorithm={algorithm}
-            setAlgorithm={setAlgorithm}
+            setAlgorithm={handleAlgorithmChange}
             quantum={quantum}
             setQuantum={setQuantum}
           />
@@ -71,7 +86,7 @@ const App = () => {
 
       <footer className="copyr">
         <div>
-          <a  href="https://www.linkedin.com/in/caique-augusto-braga/" target="_blank" >
+          <a href="https://www.linkedin.com/in/caique-augusto-braga/" target="_blank" >
             © All rights by Caiquekola and Monique
           </a>
         </div>

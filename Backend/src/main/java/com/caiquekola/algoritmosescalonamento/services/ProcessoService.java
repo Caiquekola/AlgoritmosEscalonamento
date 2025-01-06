@@ -36,9 +36,10 @@ public class ProcessoService {
         novoProcesso.setTempoEspera(processo.getTempoEspera());
         novoProcesso.setTrocasContexto(processo.getTrocasContexto());
 
-        if (novoProcesso instanceof Fifo && processo instanceof Fifo) {
-            ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
-        } else if (novoProcesso instanceof RoundRobin && processo instanceof RoundRobin) {
+//        if (novoProcesso instanceof Fifo && processo instanceof Fifo) {
+//            ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
+//        } else
+        if (novoProcesso instanceof RoundRobin && processo instanceof RoundRobin) {
             ((RoundRobin) novoProcesso).setQuantum(((RoundRobin) processo).getQuantum());
         }
 
@@ -57,9 +58,10 @@ public class ProcessoService {
 
         if (novoProcesso instanceof RoundRobin && processo instanceof RoundRobin) {
             ((RoundRobin) novoProcesso).setQuantum(((RoundRobin) processo).getQuantum());
-        } else if (novoProcesso instanceof Fifo && processo instanceof Fifo) {
-            ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
         }
+//        else if (novoProcesso instanceof Fifo && processo instanceof Fifo) {
+//            ((Fifo) novoProcesso).setPrioridade(((Fifo) processo).getPrioridade());
+//        }
 
         return this.processoRepository.save(novoProcesso);
     }

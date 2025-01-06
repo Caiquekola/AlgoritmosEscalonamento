@@ -1,33 +1,36 @@
 import React from "react";
 
 const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum }) => {
+  const handleAlgorithmChange = (newAlgorithm) => {
+    if (newAlgorithm !== algorithm) {
+      setAlgorithm(newAlgorithm);
+      setProcesses([]); // Limpa todos os processos
+    }
+  };
+
   return (
     <div className="algorithm-selector">
-      <label>
-        <input
-          type="radio"
-          value="fifo"
-          checked={algorithm === "fifo"}
-          onChange={() => setAlgorithm("fifo")}
-        />
-        FIFO
-      </label>
-      <label>
-        <input
-          type="radio"
-          value="roundrobin"
-          checked={algorithm === "roundrobin"}
-          onChange={() => setAlgorithm("roundrobin")}
-        />
-        Round Robin
-      </label>
+      <label htmlFor="algorithm">Algoritmo</label>
+      <select
+        id="algorithm"
+        value={algorithm}
+        onChange={(e) => handleAlgorithmChange(e.target.value)}
+      >
+        <option value="fifo">FIFO</option>
+        <option value="roundrobin">Round Robin</option>
+        {/* Adicione outros algoritmos aqui */}
+      </select>
+
       {algorithm === "roundrobin" && (
-        <input
-          type="number"
-          placeholder="Quantum"
-          value={quantum}
-          onChange={(e) => setQuantum(e.target.value)}
-        />
+        <>
+          <label htmlFor="quantum">Quantum</label>
+          <input
+            type="number"
+            id="quantum"
+            value={quantum}
+            onChange={(e) => handleAlgorithmChange(e.target.value)}
+          />
+        </>
       )}
     </div>
   );

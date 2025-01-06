@@ -18,11 +18,14 @@ public class Processamento{
     //inteiro será a posição de chegada e
     @OneToMany
     @JoinColumn(name = "processo_id")
-    private List<Processo> fifos;
+    private List<Processo> processos;
+    private String algoritmo;
+    private int quantum;
     private int tempoExecucao;
     private int quantidadeProcessos;
     private int tempoEspera;
     private int trocasContexto;
+
 
     public Integer getId() {
         return id;
@@ -32,12 +35,28 @@ public class Processamento{
         this.id = id;
     }
 
-    public List<Processo> getFifos() {
-        return fifos;
+    public List<Processo> getProcessos() {
+        return processos;
     }
 
-    public void setFifos(List<Processo> fifos) {
-        this.fifos = fifos;
+    public void setProcessos(List<Processo> processos) {
+        this.processos = processos;
+    }
+
+    public String getAlgoritmo() {
+        return algoritmo;
+    }
+
+    public void setAlgoritmo(String algoritmo) {
+        this.algoritmo = algoritmo;
+    }
+
+    public int getQuantum() {
+        return quantum;
+    }
+
+    public void setQuantum(int quantum) {
+        this.quantum = quantum;
     }
 
     public int getTempoExecucao() {
@@ -70,5 +89,19 @@ public class Processamento{
 
     public void setTrocasContexto(int trocasContexto) {
         this.trocasContexto = trocasContexto;
+    }
+
+    @Override
+    public String toString() {
+        return "Processamento{" +
+                "id=" + id +
+                ", processos=" + processos +
+                ", algoritmo='" + algoritmo + '\'' +
+                ", quantum=" + quantum +
+                ", tempoExecucao=" + tempoExecucao +
+                ", quantidadeProcessos=" + quantidadeProcessos +
+                ", tempoEspera=" + tempoEspera +
+                ", trocasContexto=" + trocasContexto +
+                '}';
     }
 }

@@ -7,7 +7,16 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoundRobin extends Processo {
-    public int quantum;
+    private int quantum;
+    private int prioridade;
+
+    public int getPrioridade() {
+        return prioridade;
+    }
+
+    public void setPrioridade(int prioridade) {
+        this.prioridade = prioridade;
+    }
 
     public int getQuantum() {
         return quantum;

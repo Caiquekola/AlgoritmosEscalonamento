@@ -13,8 +13,8 @@ import java.io.Serializable;
         property = "tipo"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Fifo.class, name = "Fifo"),
-        @JsonSubTypes.Type(value = RoundRobin.class, name = "RoundRobin")
+        @JsonSubTypes.Type(value = Fifo.class, name = "fifo"),
+        @JsonSubTypes.Type(value = RoundRobin.class, name = "roundrobin")
 })
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -28,6 +28,7 @@ public abstract class Processo implements Serializable {
     private int tempoEspera;
     @Column(nullable = true)
     private int trocasContexto;
+
 
     public Integer getId() {
         return id;
