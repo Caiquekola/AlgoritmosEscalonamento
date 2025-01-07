@@ -21,7 +21,7 @@ const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum, setPr
         value={algorithm}
         onChange={(e) => handleAlgorithmChange(e.target.value)}
       >
-        <option value="fifo">FIFO</option>
+        <option value="sjf">SJF</option>
         <option value="roundrobin">Round Robin</option>
         {/* Adicione outros algoritmos aqui */}
       </select>

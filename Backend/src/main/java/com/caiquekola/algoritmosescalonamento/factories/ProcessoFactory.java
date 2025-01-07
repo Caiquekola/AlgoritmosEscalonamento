@@ -3,6 +3,7 @@ package com.caiquekola.algoritmosescalonamento.factories;
 import com.caiquekola.algoritmosescalonamento.models.Fifo;
 import com.caiquekola.algoritmosescalonamento.models.Processo;
 import com.caiquekola.algoritmosescalonamento.models.RoundRobin;
+import com.caiquekola.algoritmosescalonamento.models.ShortestJobFirst;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class ProcessoFactory {
     static {
         registrar("FIFO", Fifo.class);        // Adicionei em maiúsculas para consistência
         registrar("ROUNDROBIN", RoundRobin.class);
+        registrar("SJF", ShortestJobFirst.class);
     }
 
     // Métudo para registrar novos tipos de processos

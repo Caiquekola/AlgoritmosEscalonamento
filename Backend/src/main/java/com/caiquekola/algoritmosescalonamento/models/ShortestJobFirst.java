@@ -1,4 +1,8 @@
 package com.caiquekola.algoritmosescalonamento.models;
 
-public class ShortestJobFirst {
+import jakarta.persistence.Entity;
+
+@Entity
+public class ShortestJobFirst extends Processo{
+
 }

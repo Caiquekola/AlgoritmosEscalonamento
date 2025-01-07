@@ -1,241 +1,330 @@
-import React, { useState } from "react";
-import AlgorithmSelector from "./components/AlgorithmSelector";
-import ProcessRow from "./components/ProcessRow";
-import axios from "axios";
-import ProcessVisualization from "./components/ProcessVisualization";
-import ResultsDisplay from "./components/ResultDisplay";
-import "./App.css";
-import './index.css'
+  import React, { useState } from "react";
+  import AlgorithmSelector from "./components/AlgorithmSelector";
+  import ProcessRow from "./components/ProcessRow";
+  import axios from "axios";
+  import ProcessVisualization from "./components/ProcessVisualization";
+  import ResultsDisplay from "./components/ResultDisplay";
+  import "./App.css";
+  import './index.css'
 
 
-const App = () => {
-  const [processes, setProcesses] = useState([]);
-  const [algorithm, setAlgorithm] = useState("fifo");
-  const [quantum, setQuantum] = useState(2);
-  const [results, setResults] = useState(null);
+  const App = () => {
+    const [processes, setProcesses] = useState([]);
+    const [algorithm, setAlgorithm] = useState("sjf");
+    const [quantum, setQuantum] = useState(2);
+    const [results, setResults] = useState(null);
 
-  const addProcess = () => {
-    setProcesses([
-      ...processes,
-      { id: Date.now(), tempoChegada: "", tempoExecucao: "", prioridade: "" },
-    ]);
-  };
+    
 
-  const removeProcess = (id) => {
-    setProcesses(processes.filter((process) => process.id !== id));
-  };
+    const addProcess = () => {
+      setProcesses([
+        ...processes,
+        { id: Date.now(), tempoChegada: "", tempoExecucao: "", prioridade: "" },
+      ]);
+    };
 
-  const handleAlgorithmChange = (newAlgorithm) => {
-    if (newAlgorithm !== algorithm) {
-      setAlgorithm(newAlgorithm);
-      setProcesses([]); // Limpa todos os processos
-    }
-  };
+    const removeProcess = (id) => {
+      setProcesses(processes.filter((process) => process.id !== id));
+    };
 
-
-
-  const handleRun = async () => {
-    const algoritmo = algorithm;
-
-    try {
-      const validProcesses = processes.filter(
-        ({ tempoChegada, tempoExecucao, prioridade }) =>
-          parseInt(tempoChegada, 10) > 0 ||
-          parseInt(tempoExecucao, 10) > 0 ||
-          parseInt(prioridade, 10) > 0
-      );
-
-      const sortedProcesses = validProcesses.sort((a, b) => {
-        if (a.prioridade === b.prioridade) {
-          return a.id - b.id; // Ordem de chegada (ID)
-        }
-        return a.prioridade - b.prioridade; // Menor prioridade
-      });
-
-      const payload = {
-        algoritmo,
-        quantum: parseInt(quantum, 10),
-        processos: sortedProcesses.map(({ id, ...rest }) => ({
-          ...rest,
-          tipo: algorithm === "fifo" ? "fifo" : "roundrobin",
-        })),
-      };
-
-      // Envie para o backend apenas os dados dos processos
-      const response = await axios.post(
-        `http://localhost:8080/processamento/rodar?tipo=${algorithm}`,
-        payload
-      );
-
-      console.log("Resposta do backend:", response.data); // Aqui você ainda verá a resposta do backend confirmando que o processamento foi salvo
-
-      // Agora, você calcula as métricas no frontend
-      const metrics = calculateMetrics(sortedProcesses,quantum);
-
-      // Adicionando o console.log para ver os dados antes de enviar para o ProcessVisualization
-      console.log("Dados enviados para ProcessVisualization:", {
-        algorithm, quantum, ...metrics, processes: sortedProcesses // Incluindo os processos na visualização
-      });
-
-      setResults((prevResults) => ({ algorithm, quantum, ...prevResults, ...metrics, processes: sortedProcesses }));
-
-    } catch (error) {
-      console.error("Erro ao enviar os dados para o backend:", error);
-      alert("Erro ao executar o algoritmo.");
-    }
-  };
-
-
-
-
-
- 
-  const calculateMetrics = (processes, quantum) => {
-    console.log("PRIMEIRO QUANTUM: "+quantum)
-    let totalWaitingTime = 0;
-    let totalExecutionTime = 0;
-    let totalIdleTime = 0;
-    let lastEndTime = 0;
-
-    const sortedProcesses = [...processes].sort((a, b) => a.tempoChegada - b.tempoChegada);
-
-    sortedProcesses.forEach((process, index) => {
-      const arrivalTime = parseInt(process.tempoChegada || 0, 10);
-      const burstTime = parseInt(process.tempoExecucao || 0, 10);
-
-      const startTime = index === 0 ? arrivalTime : Math.max(lastEndTime, arrivalTime);
-      const waitingTime = startTime - arrivalTime;
-      totalWaitingTime += waitingTime;
-      totalExecutionTime += burstTime;
-
-      if (arrivalTime > lastEndTime) {
-        totalIdleTime += arrivalTime - lastEndTime;
+    const handleAlgorithmChange = (newAlgorithm) => {
+      if (newAlgorithm !== algorithm) {
+        setAlgorithm(newAlgorithm);
+        setProcesses([]); // Limpa todos os processos
+        setQuantum(2);
+        
       }
-
-      lastEndTime = startTime + burstTime;
-    });
-
-    let queue = [...sortedProcesses];
-    console.log(sortedProcesses)
-    let time = 0;
-    let contextSwitches = 0;
-    console.log("queue.length>" + (queue.length > 0));
+    };
 
 
-    while (queue.length > 0) {
-      const currentProcess = queue.shift();
-      console.log("currentProcess " + currentProcess.tempoChegada)
-      let remainingTime = parseInt(currentProcess.tempoExecucao, 10);
-      console.log("remainingTime "+remainingTime);
-      // Verifica se o tempo restante é maior que o quantum e se há mais de um processo na fila
-      console.log("remainingTime > quantum: "+(remainingTime > quantum));
-      console.log("quantum"+quantum);
-      while (remainingTime > quantum) {
-        // Executa o quantum e incrementa o tempo
-        remainingTime -= quantum;
-        time += quantum;
 
-        // Se houver mais de um processo na fila, troca o processo
-        console.log("queue.length dentro do while>" + (queue.length > 0));
+    const handleRun = async () => {
+      const algoritmo = algorithm;
 
-        if (queue.length > 0) {
-          contextSwitches++; // Incrementa a troca de contexto
-        }
-
-        // Coloca o processo de volta na fila com o tempo restante
-        queue.push({ ...currentProcess, tempoExecucao: remainingTime });
-      }
-
-      // Executa o que restou do processo, que é menor ou igual ao quantum
-      if (remainingTime > 0) {
-        time += remainingTime;
-      }
+      try {
+        const validProcesses = processes.filter(
+          ({ tempoChegada, tempoExecucao, prioridade }) =>
+            parseInt(tempoChegada, 10) > 0 ||
+            parseInt(tempoExecucao, 10) > 0 ||
+            parseInt(prioridade, 10) > 0
+        );
 
       
-    }
 
+        const payload = {
+          algoritmo,
+          quantum: parseInt(quantum, 10),
+          processos: validProcesses.map(({ id, ...rest }) => ({
+            ...rest,
+            tipo: algorithm === "sjf" ? "sjf" : "roundrobin",
+          })),
+        };
 
-    // Exiba o número de trocas de contexto
-    console.log(`Context switches: ${contextSwitches}`);
+        // Envie para o backend apenas os dados dos processos
+        const response = await axios.post(
+          `http://localhost:8080/processamento/rodar?tipo=${algorithm}`,
+          payload
+        );
 
+        console.log("Resposta do backend:", response.data); // Aqui você ainda verá a resposta do backend confirmando que o processamento foi salvo
+        
+        // Agora calculamos as métricas no frontend
+        var metrics;
+        if(algorithm==="sjf"){
+          metrics = calculateMetricsSJF(validProcesses);
+        }else{
+          metrics = calculateMetricsRR(validProcesses,quantum);
+        }
 
+        // Adicionando o console.log para ver os dados antes de enviar para o ProcessVisualization
+        console.log("Dados enviados para ProcessVisualization:", {
+          algorithm, quantum, ...metrics, processes: validProcesses // Incluindo os processos na visualização
+        });
 
+        setResults((prevResults) => ({ algorithm, quantum, 
+          //...prevResults, 
+          ...metrics, processes: validProcesses }));
 
-    const cpuUtilization = (totalExecutionTime / (totalExecutionTime + totalIdleTime)) * 100;
-    const averageWaitingTime = sortedProcesses.length > 0 ? totalWaitingTime / (sortedProcesses.length - 1) : 0;
-    const averageTurnaroundTime = sortedProcesses.length > 0 ? (totalExecutionTime) / sortedProcesses.length : 0; //Turnaround corrigido
-
-    console.log("averageWaitingTime", averageWaitingTime);
-    console.log("totalWaitingTime", totalWaitingTime);
-    console.log("processes.length", processes.length);
-    console.log("contextSwitches: ", contextSwitches);
-    console.log("cpuUtilization", cpuUtilization);
-    console.log("averageTurnaroundTime", averageTurnaroundTime);
-
-    return {
-      averageWaitingTime,
-      averageTurnaroundTime,
-      contextSwitches,
-      cpuUtilization,
+      } catch (error) {
+        console.error("Erro ao enviar os dados para o backend:", error);
+        alert("Erro ao executar o algoritmo.");
+      }
     };
+
+
+
+
+
+    //Calcular métricas
+    const calculateMetricsSJF = (processes) => { 
+      let totalWaitingTime = 0;
+      let totalTurnaroundTime = 0;
+      let totalExecutionTime = 0; // Variável de tempo total de execução
+      let totalIdleTime = 0;
+      let time = 0;
+      let contextSwitches = 0;
+
+      // Ordenar processos pelo tempo de chegada
+      // Primeira ordenação
+      const sortedProcesses = [...processes].sort((a, b) => a.tempoChegada - b.tempoChegada);
+
+      //Array do tmempo restante dos processos
+      const remainingTimes = sortedProcesses.map(p => parseInt(p.tempoExecucao, 10));
+      
+      //For para percorrer o array remaningTimes e somar o tempo de execução
+      let totalTimeExec = 0;
+      for(let i = 0;i<remainingTimes.length;i++){
+        totalTimeExec += remainingTimes[i];
+      }
+
+      const completed = new Set();
+      let finishedProcesses = 0;
+
+      while (finishedProcesses < sortedProcesses.length) {
+          // Identificar processos disponíveis
+          const availableProcesses = sortedProcesses
+              .map((p, index) => ({ index, remainingTime: remainingTimes[index], tempoChegada: p.tempoChegada }))
+              .filter(p => p.tempoChegada <= time && p.remainingTime > 0 && !completed.has(p.index));
+
+          if (availableProcesses.length === 0) {
+              time++;
+              totalIdleTime++;
+              continue;
+          }
+
+          // Selecionar o processo com menor tempo de execução restante
+          const { index: currentIndex } = availableProcesses.reduce((min, p) => (p.remainingTime < min.remainingTime ? p : min));
+
+          const currentProcess = sortedProcesses[currentIndex];
+          const executionTime = remainingTimes[currentIndex];
+
+          // Executar processo completamente
+          time += executionTime;
+          remainingTimes[currentIndex] -= executionTime;
+
+          completed.add(currentIndex);
+          finishedProcesses++;
+          contextSwitches++;
+
+          // Calcular turnaround e tempos de espera
+          const finishTime = time;
+          const turnaroundTime = finishTime - currentProcess.tempoChegada;
+          const waitingTime = turnaroundTime - currentProcess.tempoExecucao;
+
+          totalWaitingTime += waitingTime;
+          totalTurnaroundTime += turnaroundTime;
+      }
+
+      const cpuUtilization = ((time - totalIdleTime) / time) * 100;
+      const averageWaitingTime = totalWaitingTime / sortedProcesses.length;
+      const averageTurnaroundTime = totalTurnaroundTime / sortedProcesses.length;
+
+      totalExecutionTime = totalTimeExec;
+      console.log("totalExecutionTime:", totalExecutionTime);
+      console.log("averageWaitingTime:", averageWaitingTime);
+      console.log("totalWaitingTime:", totalWaitingTime);
+      console.log("contextSwitches:", contextSwitches);
+      console.log("cpuUtilization:", cpuUtilization);
+      console.log("averageTurnaroundTime:", averageTurnaroundTime);
+
+      return {
+          totalExecutionTime,
+          averageWaitingTime,
+          averageTurnaroundTime,
+          contextSwitches,
+          cpuUtilization,
+      };
   };
 
 
+    const calculateMetricsRR = (processes, quantum) => {
+      console.log("PRIMEIRO QUANTUM: " + quantum);
+    
+      let totalWaitingTime = 0;
+      let totalExecutionTime = 0;
+      let totalIdleTime = 0;
+      let time = 0;
+      let contextSwitches = 0;
+    
+      // Ordenar processos inicialmente pelo tempo de chegada
+      const sortedProcesses = [...processes].sort((a, b) => a.tempoChegada - b.tempoChegada);
+    
+      // Copiar tempos de execução e chegada para controle
+      const remainingTimes = sortedProcesses.map(p => parseInt(p.tempoExecucao, 10));
+      const arrivalTimes = sortedProcesses.map(p => parseInt(p.tempoChegada, 10));
+    
+      let queue = [];
+      let finishedProcesses = 0;
+    
+      let totalTimeExec = 0;
+      for(let i = 0;i<remainingTimes.length;i++){
+        totalTimeExec += remainingTimes[i];
+      }
+
+      while (finishedProcesses < sortedProcesses.length) {
+        // Adicionar processos que chegaram ao tempo atual à fila
+        for (let i = 0; i < sortedProcesses.length; i++) {
+          if (arrivalTimes[i] <= time && !queue.includes(i) && remainingTimes[i] > 0) {
+            queue.push(i);
+          }
+        }
+    
+        if (queue.length === 0) {
+          // Avançar o tempo se nenhum processo estiver disponível
+          time++;
+          totalIdleTime++;
+          continue;
+        }
+    
+        // Pegar o próximo processo da fila (FIFO)
+        const currentIndex = queue.shift();
+        const currentProcess = sortedProcesses[currentIndex];
+    
+        // Executar o processo pelo quantum ou pelo tempo restante, o que for menor
+        const executionTime = Math.min(quantum, remainingTimes[currentIndex]);
+        remainingTimes[currentIndex] -= executionTime;
+        time += executionTime;
+    
+        // Incrementar troca de contexto se ainda há processos na fila ou se o processo será re-adicionado
+        if (queue.length > 0 || remainingTimes[currentIndex] > 0) {
+          contextSwitches++;
+        }
+    
+        // Se o processo ainda não terminou, volte para o final da fila
+        if (remainingTimes[currentIndex] > 0) {
+          queue.push(currentIndex);
+        } else {
+          // Calcular tempos de espera e término
+          finishedProcesses++;
+          const finishTime = time;
+          const turnaroundTime = finishTime - currentProcess.tempoChegada;
+          const waitingTime = turnaroundTime - currentProcess.tempoExecucao;
+    
+          totalWaitingTime += waitingTime;
+        }
+      }
+    
+      const cpuUtilization = (totalExecutionTime / (totalExecutionTime + totalIdleTime)) * 100;
+      const averageWaitingTime = totalWaitingTime / sortedProcesses.length;
+      const averageTurnaroundTime = totalExecutionTime / sortedProcesses.length;
+      
+      totalExecutionTime = totalTimeExec;
+
+      console.log("totalExecutionTime: ", totalExecutionTime);
+      console.log("averageWaitingTime", averageWaitingTime);
+      console.log("totalWaitingTime", totalWaitingTime);
+      console.log("contextSwitches", contextSwitches);
+      console.log("cpuUtilization", cpuUtilization);
+      console.log("averageTurnaroundTime", averageTurnaroundTime);
+    
+      return {
+        totalExecutionTime,
+        averageWaitingTime,
+        averageTurnaroundTime,
+        contextSwitches,
+        cpuUtilization,
+      };
+    };
+    
+    
+    
 
 
-  return (
-    <div className="app">
-      <header className="header">
-        <h1>Algoritmos Escalonados 🕐</h1>
-      </header>
-      <main className="main-content">
-        <div className="algorithm-container">
-          <AlgorithmSelector
-            algorithm={algorithm}
-            setAlgorithm={handleAlgorithmChange}
-            quantum={quantum}
-            setQuantum={setQuantum}
-            setProcesses={setProcesses}
-          />
-          <button className="add-process-btn" onClick={addProcess}>
-            + Adicionar Processo
-          </button>
-          <div className="process-list">
-            {processes.map((process) => (
-              <ProcessRow
-                key={process.id}
-                process={process}
-                removeProcess={removeProcess}
-                setProcesses={setProcesses}
-              />
-            ))}
+
+
+    return (
+      <div className="app">
+        <header className="header">
+          <h1>Algoritmos Escalonados 🕐</h1>
+        </header>
+        <main className="main-content">
+          <div className="algorithm-container">
+            <AlgorithmSelector
+              algorithm={algorithm}
+              setAlgorithm={handleAlgorithmChange}
+              quantum={quantum}
+              setQuantum={setQuantum}
+              setProcesses={setProcesses}
+            />
+            <button className="add-process-btn" onClick={addProcess}>
+              + Adicionar Processo
+            </button>
+            <div className="process-list">
+              {processes.map((process) => (
+                <ProcessRow
+                  key={process.id}
+                  process={process}
+                  removeProcess={removeProcess}
+                  setProcesses={setProcesses}
+                />
+              ))}
+            </div>
+            <button className="run-btn" onClick={handleRun}>
+              Rodar Algoritmos
+            </button>
           </div>
-          <button className="run-btn" onClick={handleRun}>
-            Rodar Algoritmos
-          </button>
-        </div>
 
-        {results && (
-          <>
-            <ProcessVisualization results={results} processes={processes} />
-            <ResultsDisplay results={results} />
-          </>
-        )}
-      </main>
+          {results && (
+            <>
+              <ProcessVisualization results={results} processes={processes} />
+              <ResultsDisplay results={results} />
+            </>
+          )}
+        </main>
 
-      <footer className="copyr">
-        <div>
-          <a
-            href="https://www.linkedin.com/in/caique-augusto-braga/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            © All rights by Caiquekola and Monique
-          </a>
-        </div>
-      </footer>
-    </div>
-  );
-};
+        <footer className="copyr">
+          <div>
+            <a
+              href="https://www.linkedin.com/in/caique-augusto-braga/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              © All rights by Caiquekola and Monique
+            </a>
+          </div>
+        </footer>
+      </div>
+    );
+  };
 
-export default App;
+  export default App;

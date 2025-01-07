@@ -32,7 +32,7 @@ public class ProcessamentoController{
         System.out.println("Processos: " + processamento.getProcessos());
 //        Processo processo = ProcessoFactory.criarProcesso(request.getAlgoritmo());
         switch (tipo.toLowerCase()){
-            case "fifo":
+            case "sjf":
                 System.out.println("Algoritmo Fifo executado com sucesso");
                 break;
                 case "roundrobin":

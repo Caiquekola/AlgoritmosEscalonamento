@@ -13,7 +13,7 @@ import java.io.Serializable;
         property = "tipo"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Fifo.class, name = "fifo"),
+        @JsonSubTypes.Type(value = ShortestJobFirst.class, name = "sjf"),
         @JsonSubTypes.Type(value = RoundRobin.class, name = "roundrobin")
 })
 @Entity
