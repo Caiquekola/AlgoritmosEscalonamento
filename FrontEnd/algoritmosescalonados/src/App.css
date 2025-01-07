@@ -14,8 +14,10 @@ body {
 .main-content {
   padding: 20px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column; /* Muda para disposição vertical */
+  justify-content: flex-start; /* Alinha os itens no início */
+  align-items: center; /* Centraliza horizontalmente */
+  gap: 20px; /* Espaçamento vertical entre os elementos */
 }
 
 .algorithm-container {

@@ -1,11 +1,16 @@
 import React from "react";
 
-const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum }) => {
+const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum, setProcesses }) => {
   const handleAlgorithmChange = (newAlgorithm) => {
     if (newAlgorithm !== algorithm) {
       setAlgorithm(newAlgorithm);
-      setProcesses([]); // Limpa todos os processos
+      setProcesses([]); // Limpa todos os processos ao mudar o algoritmo
     }
+  };
+
+  const handleQuantumChange = (event) => {
+    const value = event.target.value;
+    setQuantum(value);
   };
 
   return (
@@ -28,7 +33,7 @@ const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum }) => 
             type="number"
             id="quantum"
             value={quantum}
-            onChange={(e) => handleAlgorithmChange(e.target.value)}
+            onChange={handleQuantumChange} // Atualiza o valor de quantum
           />
         </>
       )}
