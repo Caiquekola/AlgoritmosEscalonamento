@@ -3,6 +3,7 @@ package com.caiquekola.algoritmosescalonamento.services;
 import com.caiquekola.algoritmosescalonamento.models.Processamento;
 import com.caiquekola.algoritmosescalonamento.models.Processo;
 import com.caiquekola.algoritmosescalonamento.repositories.ProcessamentoRepository;
+import com.caiquekola.algoritmosescalonamento.repositories.ProcessoRepository;
 import com.caiquekola.algoritmosescalonamento.services.exceptions.DataBindingViolationException;
 import com.caiquekola.algoritmosescalonamento.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,32 @@ public class ProcessamentoService {
     @Autowired
     private ProcessamentoRepository processamentoRepository;
 
+    @Autowired
+    private ProcessoRepository processoRepository;
+
+    @org.springframework.transaction.annotation.Transactional
+    public Processamento salvarProcessamento(Processamento processamento) {
+
+        processamento = processamentoRepository.save(processamento);
+
+        System.out.println("Processamento salvo com id: "+processamento.getId());
+
+        // Salvar os processos individualmente
+        List<Processo> processos = processamento.getProcessos();
+        if (processos != null) {
+            for (Processo processo : processos) {
+                processo.setProcessamento(processamento); // Vincula o processamento ao processo
+                processoRepository.save(processo);
+
+            }
+        }
+
+
+        // Salvar o processamento
+        return processamento;
+    }
+
+
     //Read
     public Processamento encontrarPeloId(Integer idProcesso) {
         Optional<Processamento> processamento = processamentoRepository.findById(idProcesso);
@@ -24,11 +51,7 @@ public class ProcessamentoService {
     }
 
     //create
-    @Transactional
-    public Processamento criarProcessamento(Processamento processamento) {
-        processamento.setId(null);
-        return processamentoRepository.save(processamento);
-    }
+
 
 //    public List<Processo> processoList(Processamento processamento){
 //

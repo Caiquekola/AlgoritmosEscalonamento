@@ -28,6 +28,30 @@ public abstract class Processo implements Serializable {
     private int tempoEspera;
     @Column(nullable = true)
     private int trocasContexto;
+    private int prioridade;
+
+    @ManyToOne
+    @JoinColumn(name = "processamento_id",nullable = false)
+    private Processamento processamento;
+
+
+    public int getPrioridade() {
+        return prioridade;
+    }
+
+    public void setPrioridade(int prioridade) {
+        this.prioridade = prioridade;
+    }
+
+    public Processamento getProcessamento() {
+        return processamento;
+    }
+
+    public void setProcessamento(Processamento processamento) {
+        this.processamento = processamento;
+    }
+
+
 
 
     public Integer getId() {
@@ -74,10 +98,12 @@ public abstract class Processo implements Serializable {
     public String toString() {
         return "Processo{" +
                 "id=" + id +
-                ", tempoProcessamento=" + tempoExecucao +
                 ", tempoChegada=" + tempoChegada +
+                ", tempoExecucao=" + tempoExecucao +
                 ", tempoEspera=" + tempoEspera +
                 ", trocasContexto=" + trocasContexto +
+                ", prioridade=" + prioridade +
+                ", processamento=" + processamento +
                 '}';
     }
 }

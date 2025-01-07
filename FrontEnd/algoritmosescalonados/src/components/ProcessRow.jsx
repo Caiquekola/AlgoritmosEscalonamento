@@ -14,20 +14,20 @@ const ProcessRow = ({ process, removeProcess, setProcesses }) => {
       <input
         type="number"
         placeholder="Tempo de Chegada"
-        value={process.arrivalTime}
-        onChange={(e) => updateProcess("arrivalTime", e.target.value)}
+        value={process.tempoChegada}
+        onChange={(e) => updateProcess("tempoChegada", e.target.value)}
       />
       <input
         type="number"
         placeholder="Tempo de Execução"
-        value={process.executionTime}
-        onChange={(e) => updateProcess("executionTime", e.target.value)}
+        value={process.tempoExecucao}
+        onChange={(e) => updateProcess("tempoExecucao", e.target.value)}
       />
       <input
         type="number"
         placeholder="Prioridade"
-        value={process.priority}
-        onChange={(e) => updateProcess("priority", e.target.value)}
+        value={process.prioridade}
+        onChange={(e) => updateProcess("prioridade", e.target.value)}
       />
       <button onClick={() => removeProcess(process.id)}>🗑️</button>
     </div>

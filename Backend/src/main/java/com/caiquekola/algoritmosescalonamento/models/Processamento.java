@@ -11,14 +11,14 @@ import com.caiquekola.algoritmosescalonamento.models.Processo;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Processamento{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     //inteiro será a posição de chegada e
-    @OneToMany
-    @JoinColumn(name = "processo_id")
-    private List<Processo> processos;
+
+
     private String algoritmo;
     private int quantum;
     private int tempoExecucao;
@@ -26,6 +26,11 @@ public class Processamento{
     private int tempoEspera;
     private int trocasContexto;
 
+    @OneToMany(
+//            cascade = CascadeType.ALL,
+            mappedBy = "processamento",
+            orphanRemoval = true)
+    private List<Processo> processos;
 
     public Integer getId() {
         return id;
@@ -102,6 +107,6 @@ public class Processamento{
                 ", quantidadeProcessos=" + quantidadeProcessos +
                 ", tempoEspera=" + tempoEspera +
                 ", trocasContexto=" + trocasContexto +
-                '}';
+                "}\n";
     }
 }
