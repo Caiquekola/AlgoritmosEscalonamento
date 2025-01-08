@@ -152,6 +152,24 @@ const ProcessVisualization = ({ results }) => {
           continue;
         }
     
+        // Verifica se há apenas um processo na fila e nenhum outro a ser adicionado
+        if (queue.length === 1 && remainingProcesses.length === 0) {
+          const process = queue.shift();
+          const executionTime = process.remainingTime;
+    
+          if (!blocks[process.index]) {
+            blocks[process.index] = [];
+          }
+          blocks[process.index].push({
+            start: currentTime,
+            duration: executionTime,
+          });
+    
+          currentTime += executionTime;
+          process.remainingTime = 0;
+          continue;
+        }
+    
         // Executa o próximo processo da fila
         const process = queue.shift();
         const executionTime = Math.min(quantum, process.remainingTime);
@@ -185,6 +203,7 @@ const ProcessVisualization = ({ results }) => {
       }
     }
     
+    
    
       
     
@@ -203,7 +222,7 @@ const ProcessVisualization = ({ results }) => {
       <div className="stats">
         <div className="stat-box">
           <h3 className="stat-title">Tempo médio de espera</h3>
-          <p className="stat-value">{(averageWaitingTime.toFixed(2).parseInt)?0:0}</p>
+          <p className="stat-value">{Number(averageWaitingTime.toFixed(2))}s</p>
         </div>
         <div className="stat-box">
           <h3 className="stat-title">Tempo de execução médio</h3>

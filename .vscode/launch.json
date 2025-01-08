@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AlgoritmosEscalonamentoApplication<AlgoritmosEscalonamento>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.caiquekola.algoritmosescalonamento.AlgoritmosEscalonamentoApplication",
+            "projectName": "AlgoritmosEscalonamento",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
