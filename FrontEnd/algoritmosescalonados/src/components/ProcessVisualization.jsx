@@ -210,6 +210,13 @@ const ProcessVisualization = ({ results }) => {
     return blocks;
   };
   
+  const sortedProcesses = [...processes].sort((a, b) => {
+    if (parseInt(a.tempoChegada) === parseInt(b.tempoChegada)) {
+      return parseInt(a.prioridade) - parseInt(b.prioridade);
+    }
+    return parseInt(a.tempoChegada) - parseInt(b.tempoChegada);
+  });
+
   const processExecutions = calculateExecutionBlocks();
 
   return (
@@ -249,7 +256,7 @@ const ProcessVisualization = ({ results }) => {
             </tr>
           </thead>
           <tbody>
-            {processes.map((process, index) => (
+            {sortedProcesses.map((process, index) => (
               <tr key={process.id}>
                 <td>P{index + 1}</td>
                 <td>{process.tempoChegada}</td>

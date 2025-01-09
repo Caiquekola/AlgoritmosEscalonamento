@@ -277,15 +277,20 @@ const App = () => {
     let tempoTotalInativo = 0;
     let tempoAtual = 0;
     let trocasDeContexto = 0;
-  
-    const processosOrdenados = [...processos].sort((a, b) => a.tempoChegada - b.tempoChegada);
+    //Ordenacao dos processos baseado no tempo de chegada e prioridade caso forem tempos iguais;
+    const processosOrdenados = [...processos].sort((a, b) => {
+        if (a.tempoChegada === b.tempoChegada) {
+            return a.prioridade - b.prioridade; // Menor prioridade vem primeiro
+        }
+        return a.tempoChegada - b.tempoChegada;
+    });
     const temposRestantes = processosOrdenados.map((p) => parseInt(p.tempoExecucao, 10));
     const temposChegada = processosOrdenados.map((p) => parseInt(p.tempoChegada, 10));
   
     let fila = [];
     let processosNaFila = new Set();
     let processosConcluidos = new Set();
-    let processoAtivo = null; // Identifica o índice do processo em execução
+    let ultimoProcessoExecutado  = null; // Identifica o índice do processo em execução
   
     const adicionarNovosProcessos = () => {
       for (let i = 0; i < processosOrdenados.length; i++) {
@@ -293,7 +298,7 @@ const App = () => {
           temposChegada[i] <= tempoAtual && // Processo chegou
           !processosNaFila.has(i) && // Não está na fila
           !processosConcluidos.has(i) && // Não está concluído
-          processoAtivo !== i // Não está em execução
+          ultimoProcessoExecutado !== i // Não está em execução
         ) {
           fila.push(i);
           processosNaFila.add(i);
@@ -317,13 +322,16 @@ const App = () => {
   
       const indiceAtual = fila.shift();
       processosNaFila.delete(indiceAtual);
+
+      const processoAtual = processosOrdenados[indiceAtual];
   
-      if (processoAtivo !== null && processoAtivo !== indiceAtual) {
+      console.log("processoAtivo !== null && processoAtivo !== indiceAtual: "+(ultimoProcessoExecutado !== null && ultimoProcessoExecutado !== indiceAtual));
+      if (ultimoProcessoExecutado !== null && ultimoProcessoExecutado !== processoAtual.id) {
         trocasDeContexto++; // Troca de contexto porque o processo anterior foi interrompido
       }
-      processoAtivo = indiceAtual; // Marca o processo atual como ativo
+
+      ultimoProcessoExecutado = indiceAtual; // Marca o processo atual como ativo
   
-      const processoAtual = processosOrdenados[indiceAtual];
       console.log(`Executando Processo P${processoAtual.id} por até ${quantum} unidade(s).`);
   
       let tempoExecutado = 0;
@@ -355,7 +363,6 @@ const App = () => {
         console.log(`  Tempo de Espera: ${tempoEspera}`);
       }
   
-      processoAtivo = null; // Libera o processo ativo
       console.log(`Pilha Atual: [${fila.map((i) => `P${processosOrdenados[i].id}`).join(", ")}]`);
     }
   
@@ -370,7 +377,7 @@ const App = () => {
     console.log("Utilização da CPU: ", utilizacaoCPU);
   
     return {
-      tempoTotalExecucao: tempoAtual,
+      totalExecutionTime: tempoAtual,
       averageWaitingTime: mediaTempoEspera,
       averageTurnaroundTime: mediaTempoRetorno,
       contextSwitches: trocasDeContexto,
