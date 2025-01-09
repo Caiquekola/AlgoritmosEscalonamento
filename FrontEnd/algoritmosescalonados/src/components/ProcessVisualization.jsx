@@ -84,6 +84,8 @@ const ProcessVisualization = ({ results }) => {
     let currentTime = 0;
   
     if (algorithm === "sjf") {
+      contextSwitches = 0;
+      quantum = 0;
       const remainingProcesses = [...processes].map((process, index) => ({
         ...process,
         remainingTime: parseInt(process.tempoExecucao),
@@ -228,19 +230,32 @@ const ProcessVisualization = ({ results }) => {
 
       <div className="stats">
         <div className="stat-box">
-          <h3 className="stat-title">Tempo médio de espera</h3>
+          <h3 className="stat-title">Tempo médio de espera 🫸</h3>
           <p className="stat-value">{Number(averageWaitingTime.toFixed(2))}s</p>
         </div>
+        
         <div className="stat-box">
-          <h3 className="stat-title">Tempo de execução médio</h3>
+          <h3 className="stat-title">Tempo de execução médio ⏳</h3>
           <p className="stat-value">{averageTurnaroundTime.toFixed(2)}s</p>
         </div>
         <div className="stat-box">
-          <h3 className="stat-title">Trocas de contexto</h3>
-          <p className="stat-value">{contextSwitches}</p>
+          <h3 className="stat-title">Tempo total de execução ⏰</h3>
+          <p className="stat-value">{totalExecutionTime}s</p>
         </div>
+        {algorithm === "roundrobin" && (
+          <>
+            <div className="stat-box">
+              <h3 className="stat-title">Trocas de contexto ↔️</h3>
+              <p className="stat-value">{contextSwitches}</p>
+            </div>
+            <div className="stat-box">
+              <h3 className="stat-title">Quantum 🔋</h3>
+              <p className="stat-value">{quantum}s</p>
+            </div>
+          </>
+        )}
         <div className="stat-box">
-          <h3 className="stat-title">Utilização do processador</h3>
+          <h3 className="stat-title">Utilização do processador ⛈️</h3>
           <p className="stat-value">{cpuUtilization.toFixed(2)}%</p>
         </div>
       </div>
@@ -258,7 +273,7 @@ const ProcessVisualization = ({ results }) => {
           <tbody>
             {sortedProcesses.map((process, index) => (
               <tr key={process.id}>
-                <td>P{index + 1}</td>
+                <td className={`process-id ${colors[index % colors.length]}`}>P{index + 1}</td>
                 <td>{process.tempoChegada}</td>
                 <td>{process.tempoExecucao}</td>
                 <td>{process.prioridade}</td>

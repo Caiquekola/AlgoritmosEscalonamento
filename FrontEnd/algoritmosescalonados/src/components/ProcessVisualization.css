@@ -73,7 +73,9 @@
   align-items: center;
   margin-bottom: 0.5rem;
 }
+td{
 
+}
 .process-label {
   width: 4rem;
   font-size: 0.875rem;
@@ -100,6 +102,10 @@
   font-size: 0.75rem;
   color: #fff;
   font-weight: bold;
+}
+
+.process-id {
+  color: white;
 }
 
 .color-blue {
