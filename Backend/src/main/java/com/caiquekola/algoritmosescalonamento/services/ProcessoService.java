@@ -1,7 +1,5 @@
 package com.caiquekola.algoritmosescalonamento.services;
 
-import com.caiquekola.algoritmosescalonamento.models.Fifo;
-import com.caiquekola.algoritmosescalonamento.models.Processamento;
 import com.caiquekola.algoritmosescalonamento.models.Processo;
 import com.caiquekola.algoritmosescalonamento.factories.ProcessoFactory;
 import com.caiquekola.algoritmosescalonamento.models.RoundRobin;
@@ -11,8 +9,6 @@ import com.caiquekola.algoritmosescalonamento.services.exceptions.ObjectNotFound
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 import java.util.Optional;
 
 @Service

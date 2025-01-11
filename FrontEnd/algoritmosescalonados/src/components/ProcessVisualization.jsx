@@ -15,7 +15,7 @@ const ProcessVisualization = ({ results }) => {
   
   const colors = ["color-blue", "color-yellow", "color-purple", "color-green", "color-red"];
 
-  const maxArrival = Math.max(...processes.map((p) => parseInt(p.tempoChegada)));
+  const maxArrival = Math.min(...processes.map((p) => parseInt(p.tempoChegada)));
   const totalBurst = processes.reduce((sum, p) => sum + parseInt(p.tempoExecucao), 0);
   const totalTime = maxArrival + totalBurst;
 
@@ -223,8 +223,7 @@ const ProcessVisualization = ({ results }) => {
 
       <div className="gantt-chart">
         <div className="gantt-numbers">
-          
-          {Array.from({ length: totalExecutionTime }).map((_, i) => (
+          {Array.from({ length: totalExecutionTime+1 }).map((_, i) => (
             <div key={i} className="gantt-number">
               {i}
             </div>

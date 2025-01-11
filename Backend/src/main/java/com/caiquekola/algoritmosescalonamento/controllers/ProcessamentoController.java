@@ -1,16 +1,11 @@
 package com.caiquekola.algoritmosescalonamento.controllers;
 
-import com.caiquekola.algoritmosescalonamento.factories.ProcessoFactory;
 import com.caiquekola.algoritmosescalonamento.models.Processamento;
-import com.caiquekola.algoritmosescalonamento.models.Processo;
 import com.caiquekola.algoritmosescalonamento.services.ProcessamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/processamento")

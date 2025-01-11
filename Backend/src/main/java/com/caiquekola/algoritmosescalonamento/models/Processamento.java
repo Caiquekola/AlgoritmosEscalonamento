@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import com.caiquekola.algoritmosescalonamento.models.Processo;
 
 
 @Entity
