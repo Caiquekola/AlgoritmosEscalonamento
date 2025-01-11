@@ -3,7 +3,8 @@ import AlgorithmSelector from "./components/AlgorithmSelector";
 import ProcessRow from "./components/ProcessRow";
 import axios from "axios";
 import ProcessVisualization from "./components/ProcessVisualization";
-import ResultsDisplay from "./components/ResultDisplay";
+// import ResultsDisplay from "./components/ResultDisplay";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 import './index.css'
 
@@ -100,10 +101,6 @@ const App = () => {
     }
   };
 
-
-
-
-
   //Calcular métricas
   const calculateMetricsSJF = (processes) => {
     let totalWaitingTime = 0;
@@ -122,8 +119,8 @@ const App = () => {
 
     //For para percorrer o array remaningTimes e somar o tempo de execução
     let totalTimeExec = 0;
-    for (let i = 0; i < remainingTimes.length; i++) {
-      totalTimeExec += remainingTimes[i];
+    for (const element of remainingTimes) {
+      totalTimeExec += element;
     }
 
     const completed = new Set();
@@ -144,6 +141,7 @@ const App = () => {
       // Selecionar o processo com menor tempo de execução restante
       const { index: currentIndex } = availableProcesses.reduce((min, p) => (p.remainingTime < min.remainingTime ? p : min));
 
+
       const currentProcess = sortedProcesses[currentIndex];
       const executionTime = remainingTimes[currentIndex];
 
@@ -153,8 +151,11 @@ const App = () => {
 
       completed.add(currentIndex);
       finishedProcesses++;
-      contextSwitches++;
-
+      if(finishedProcesses !== processes.length) {
+        contextSwitches++;
+      }
+      time = time + 1;
+      
       // Calcular turnaround e tempos de espera
       const finishTime = time;
       const turnaroundTime = finishTime - currentProcess.tempoChegada;
@@ -184,90 +185,6 @@ const App = () => {
       cpuUtilization,
     };
   };
-
-
-  // const calculateMetricsRR = (processes, quantum) => {
-  //   console.log("PRIMEIRO QUANTUM: " + quantum);
-
-  //   let totalWaitingTime = 0;
-  //   let totalTurnaroundTime = 0;
-  //   let totalIdleTime = 0;
-  //   let time = 0;
-  //   let contextSwitches = 0;
-
-  //   // Ordenar processos por tempo de chegada
-  //   const sortedProcesses = [...processes].sort((a, b) => a.tempoChegada - b.tempoChegada);
-
-  //   // Inicializar tempos de execução restantes e chegada
-  //   const remainingTimes = sortedProcesses.map(p => parseInt(p.tempoExecucao, 10));
-  //   const arrivalTimes = sortedProcesses.map(p => parseInt(p.tempoChegada, 10));
-
-  //   let queue = [];
-  //   let finishedProcesses = 0;
-
-  //   while (finishedProcesses < sortedProcesses.length) {
-  //     // Adicionar processos que chegaram ao tempo atual à fila
-  //     for (let i = 0; i < sortedProcesses.length; i++) {
-  //       if (arrivalTimes[i] <= time && !queue.includes(i) && remainingTimes[i] > 0) {
-  //         queue.push(i);
-  //       }
-  //     }
-
-  //     if (queue.length === 0) {
-  //       // Avançar o tempo se não há processos disponíveis
-  //       time++;
-  //       totalIdleTime++;
-  //       continue;
-  //     }
-
-  //     // Obter próximo processo da fila
-  //     const currentIndex = queue.shift();
-  //     const currentProcess = sortedProcesses[currentIndex];
-
-  //     // Executar o processo pelo quantum ou tempo restante, o que for menor
-  //     const executionTime = Math.min(quantum, remainingTimes[currentIndex]);
-  //     remainingTimes[currentIndex] -= executionTime;
-  //     time += executionTime;
-
-  //     // Incrementar troca de contexto se o processo não terminar
-  //     if (queue.length > 0 || remainingTimes[currentIndex] > 0) {
-  //       contextSwitches++;
-  //     }
-
-  //     // Re-adicionar à fila se o processo ainda não terminou
-  //     if (remainingTimes[currentIndex] > 0) {
-  //       queue.push(currentIndex);
-  //     } else {
-  //       // Calcular tempos de espera e turnaround quando o processo termina
-  //       finishedProcesses++;
-  //       const finishTime = time;
-  //       const turnaroundTime = finishTime - arrivalTimes[currentIndex];
-  //       const waitingTime = turnaroundTime - currentProcess.tempoExecucao;
-
-  //       totalTurnaroundTime += turnaroundTime;
-  //       totalWaitingTime += waitingTime;
-  //     }
-  //   }
-
-  //   const averageWaitingTime = parseFloat((totalWaitingTime / sortedProcesses.length).toFixed(2));
-  //   const averageTurnaroundTime = parseFloat((totalTurnaroundTime / sortedProcesses.length).toFixed(2));
-  //   const cpuUtilization = parseFloat((((time - totalIdleTime) / time) * 100).toFixed(2));
-
-  //   console.log("totalExecutionTime: ", time);
-  //   console.log("averageWaitingTime", averageWaitingTime);
-  //   console.log("totalWaitingTime", totalWaitingTime);
-  //   console.log("averageTurnaroundTime", averageTurnaroundTime);
-  //   console.log("contextSwitches", contextSwitches);
-  //   console.log("cpuUtilization", cpuUtilization);
-
-  //   return {
-  //     totalExecutionTime: time,
-  //     averageWaitingTime,
-  //     averageTurnaroundTime,
-  //     contextSwitches,
-  //     cpuUtilization,
-  //   };
-  // };
 
   const calculateMetricsRR = (processos, quantum) => {
     console.log("Quantum: " + quantum);
@@ -385,24 +302,6 @@ const App = () => {
     };
   };
   
-  
-  
-  
-  
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className="app">
@@ -418,8 +317,8 @@ const App = () => {
             setQuantum={setQuantum}
             setProcesses={setProcesses}
           />
-          <button className="add-process-btn" onClick={addProcess}>
-            + Adicionar Processo
+          <button className="add-process-btn w-100"  onClick={addProcess}>
+            ➕ Adicionar Processo
           </button>
           <div className="process-list">
             {processes.map((process) => (
@@ -439,7 +338,7 @@ const App = () => {
         {results && (
           <>
             <ProcessVisualization results={results} processes={processes} />
-            <ResultsDisplay results={results} />
+            {/* <ResultsDisplay results={results} /> */}
           </>
         )}
       </main>

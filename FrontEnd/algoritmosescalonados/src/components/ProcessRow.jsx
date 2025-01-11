@@ -23,12 +23,12 @@ const ProcessRow = ({ process, removeProcess, setProcesses }) => {
         value={process.tempoExecucao}
         onChange={(e) => updateProcess("tempoExecucao", e.target.value)}
       />
-      <input
+      {/* <input
         type="number"
         placeholder="Prioridade"
         value={process.prioridade}
         onChange={(e) => updateProcess("prioridade", e.target.value)}
-      />
+      /> */}
       <button onClick={() => removeProcess(process.id)}>🗑️</button>
     </div>
   );

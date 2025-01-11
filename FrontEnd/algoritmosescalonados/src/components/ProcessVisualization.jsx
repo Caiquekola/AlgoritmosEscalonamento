@@ -19,64 +19,6 @@ const ProcessVisualization = ({ results }) => {
   const totalBurst = processes.reduce((sum, p) => sum + parseInt(p.tempoExecucao), 0);
   const totalTime = maxArrival + totalBurst;
 
-  // const calculateExecutionBlocks = () => {
-  //   const blocks = {};
-  //   let currentTime = 0;
-
-  //   if (algorithm === "sjf") {
-  //     const sortedProcesses = [...processes].sort(
-  //       (a, b) => parseInt(a.tempoChegada) - parseInt(b.tempoChegada)
-  //     );
-
-  //     sortedProcesses.forEach((process, index) => {
-  //       const arrivalTime = parseInt(process.tempoChegada);
-  //       const burstTime = parseInt(process.tempoExecucao);
-  //       currentTime = Math.max(currentTime, arrivalTime);
-  //       blocks[index] = [
-  //         {
-  //           start: currentTime,
-  //           duration: burstTime,
-  //         },
-  //       ];
-  //       currentTime += burstTime;
-  //     });
-  //   } else if (algorithm === "roundrobin") {
-  //     const queue = processes.map((process, index) => ({
-  //       ...process,
-  //       remainingTime: parseInt(process.tempoExecucao),
-  //       index,
-  //     }));
-
-  //     while (queue.length > 0) {
-  //       const process = queue.shift();
-  //       if (!process) break;
-
-  //       const arrivalTime = parseInt(process.tempoChegada);
-  //       if (currentTime < arrivalTime) {
-  //         currentTime = arrivalTime;
-  //       }
-
-  //       const executionTime = Math.min(quantum, process.remainingTime);
-
-  //       if (!blocks[process.index]) {
-  //         blocks[process.index] = [];
-  //       }
-  //       blocks[process.index].push({
-  //         start: currentTime,
-  //         duration: executionTime,
-  //       });
-
-  //       currentTime += executionTime;
-  //       process.remainingTime -= executionTime;
-
-  //       if (process.remainingTime > 0) {
-  //         queue.push(process);
-  //       }
-  //     }
-  //   }
-
-  //   return blocks;
-  // };
 
 
   const calculateExecutionBlocks = () => {
@@ -84,8 +26,6 @@ const ProcessVisualization = ({ results }) => {
     let currentTime = 0;
   
     if (algorithm === "sjf") {
-      contextSwitches = 0;
-      quantum = 0;
       const remainingProcesses = [...processes].map((process, index) => ({
         ...process,
         remainingTime: parseInt(process.tempoExecucao),
@@ -242,18 +182,16 @@ const ProcessVisualization = ({ results }) => {
           <h3 className="stat-title">Tempo total de execução ⏰</h3>
           <p className="stat-value">{totalExecutionTime}s</p>
         </div>
-        {algorithm === "roundrobin" && (
-          <>
-            <div className="stat-box">
+        <div className="stat-box">
               <h3 className="stat-title">Trocas de contexto ↔️</h3>
               <p className="stat-value">{contextSwitches}</p>
             </div>
+        {algorithm === "roundrobin" && (
             <div className="stat-box">
               <h3 className="stat-title">Quantum 🔋</h3>
               <p className="stat-value">{quantum}s</p>
             </div>
-          </>
-        )}
+        )} 
         <div className="stat-box">
           <h3 className="stat-title">Utilização do processador ⛈️</h3>
           <p className="stat-value">{cpuUtilization.toFixed(2)}%</p>
@@ -267,7 +205,7 @@ const ProcessVisualization = ({ results }) => {
               <th>Processo</th>
               <th>Tempo chegada</th>
               <th>Tempo execução</th>
-              <th>Priority</th>
+              {/* <th>Priority</th> */}
             </tr>
           </thead>
           <tbody>
@@ -276,7 +214,7 @@ const ProcessVisualization = ({ results }) => {
                 <td className={`process-id ${colors[index % colors.length]}`}>P{index + 1}</td>
                 <td>{process.tempoChegada}</td>
                 <td>{process.tempoExecucao}</td>
-                <td>{process.prioridade}</td>
+                {/* <td>{process.prioridade}</td> */}
               </tr>
             ))}
           </tbody>
