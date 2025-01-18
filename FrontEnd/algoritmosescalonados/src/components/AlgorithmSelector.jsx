@@ -15,7 +15,7 @@ const AlgorithmSelector = ({ algorithm, setAlgorithm, quantum, setQuantum, setPr
   };
 
   return (
-    <div className="algorithm-selector mb-4">
+    <div className="algorithm-selector mb-4 ">
       <div className="d-flex justify-content-between align-items-center">
         <label htmlFor="algorithm" className="form-label mb-0">Algoritmo</label>
         <select

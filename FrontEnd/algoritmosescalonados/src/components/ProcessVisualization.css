@@ -3,7 +3,8 @@
   background-color: #fff;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 70%;
+  width: 80%;
+  justify-content: center;
 }
 
 .title {
@@ -26,18 +27,23 @@
   background-color: #f9fafb;
   padding: 1rem;
   border-radius: 0.5rem;
-  text-align: center;
-}
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    justify-content: center;
+  
+  }
+ 
+  
 
 .stat-title {
   font-size: 0.875rem;
   color: #6b7280;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
 
 .table-wrapper {
   margin-bottom: 2rem;

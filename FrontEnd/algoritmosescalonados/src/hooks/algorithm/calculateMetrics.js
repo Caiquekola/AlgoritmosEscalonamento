@@ -203,3 +203,5 @@ export const calculateMetricsRR = (processos, quantum) => {
         cpuUtilization: utilizacaoCPU,
     };
 };
+
+

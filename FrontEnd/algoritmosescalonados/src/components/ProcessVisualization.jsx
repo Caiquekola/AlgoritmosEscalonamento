@@ -12,7 +12,7 @@ const ProcessVisualization = ({ results }) => {
     cpuUtilization,
     totalExecutionTime,
   } = results;
-  
+
   const colors = ["color-blue", "color-yellow", "color-purple", "color-green", "color-red"];
 
   const maxArrival = Math.min(...processes.map((p) => parseInt(p.tempoChegada)));
@@ -24,25 +24,25 @@ const ProcessVisualization = ({ results }) => {
   const calculateExecutionBlocks = () => {
     const blocks = {};
     let currentTime = 0;
-  
+
     if (algorithm === "sjf") {
       const remainingProcesses = [...processes].map((process, index) => ({
         ...process,
         remainingTime: parseInt(process.tempoExecucao),
         index,
       }));
-  
+
       while (remainingProcesses.length > 0) {
         // Seleciona o próximo processo com menor tempo de execução já disponível
         const availableProcesses = remainingProcesses.filter(
           (process) => parseInt(process.tempoChegada) <= currentTime
         );
-  
+
         if (availableProcesses.length > 0) {
           const nextProcess = availableProcesses.reduce((prev, curr) =>
             prev.remainingTime < curr.remainingTime ? prev : curr
           );
-  
+
           // Executa o processo
           const burstTime = nextProcess.remainingTime;
           if (!blocks[nextProcess.index]) {
@@ -52,7 +52,7 @@ const ProcessVisualization = ({ results }) => {
             start: currentTime,
             duration: burstTime,
           });
-  
+
           currentTime += burstTime;
           remainingProcesses.splice(
             remainingProcesses.indexOf(nextProcess),
@@ -71,9 +71,9 @@ const ProcessVisualization = ({ results }) => {
         remainingTime: parseInt(process.tempoExecucao),
         index,
       }));
-    
+
       let currentTime = 0;
-    
+
       while (remainingProcesses.length > 0 || queue.length > 0) {
         // Adiciona processos que chegaram no tempo atual à fila
         for (const process of remainingProcesses) {
@@ -81,24 +81,24 @@ const ProcessVisualization = ({ results }) => {
             queue.push(process);
           }
         }
-    
+
         // Remove os processos já adicionados à fila
         remainingProcesses.splice(
           0,
           remainingProcesses.filter((process) => parseInt(process.tempoChegada) <= currentTime).length
         );
-    
+
         if (queue.length === 0) {
           // Avança o tempo se nenhum processo está disponível
           currentTime++;
           continue;
         }
-    
+
         // Verifica se há apenas um processo na fila e nenhum outro a ser adicionado
         if (queue.length === 1 && remainingProcesses.length === 0) {
           const process = queue.shift();
           const executionTime = process.remainingTime;
-    
+
           if (!blocks[process.index]) {
             blocks[process.index] = [];
           }
@@ -106,16 +106,16 @@ const ProcessVisualization = ({ results }) => {
             start: currentTime,
             duration: executionTime,
           });
-    
+
           currentTime += executionTime;
           process.remainingTime = 0;
           continue;
         }
-    
+
         // Executa o próximo processo da fila
         const process = queue.shift();
         const executionTime = Math.min(quantum, process.remainingTime);
-    
+
         if (!blocks[process.index]) {
           blocks[process.index] = [];
         }
@@ -123,10 +123,10 @@ const ProcessVisualization = ({ results }) => {
           start: currentTime,
           duration: executionTime,
         });
-    
+
         currentTime += executionTime;
         process.remainingTime -= executionTime;
-    
+
         // Adiciona novos processos que chegaram enquanto o atual estava sendo executado
         for (const newProcess of remainingProcesses) {
           if (
@@ -137,21 +137,21 @@ const ProcessVisualization = ({ results }) => {
             queue.push(newProcess);
           }
         }
-    
+
         // Reinsere o processo na fila se ele ainda não terminou
         if (process.remainingTime > 0) {
           queue.push(process);
         }
       }
     }
-    
-    
-   
-      
-    
+
+
+
+
+
     return blocks;
   };
-  
+
   const sortedProcesses = [...processes].sort((a, b) => {
     if (parseInt(a.tempoChegada) === parseInt(b.tempoChegada)) {
       return parseInt(a.prioridade) - parseInt(b.prioridade);
@@ -163,17 +163,14 @@ const ProcessVisualization = ({ results }) => {
 
   return (
     <div className="container">
-      <h2 className="title">
-         PROCESSAMENTO {algorithm === "sjf" ? "SJF" : "Round Robin"}
-        {algorithm === "roundrobin" && ` (Quantum = ${quantum}s)`}
-      </h2>
+
 
       <div className="stats">
         <div className="stat-box">
           <h3 className="stat-title">Tempo médio de espera 🫸</h3>
           <p className="stat-value">{Number(averageWaitingTime.toFixed(2))}s</p>
         </div>
-        
+
         <div className="stat-box">
           <h3 className="stat-title">Tempo de execução médio ⏳</h3>
           <p className="stat-value">{averageTurnaroundTime.toFixed(2)}s</p>
@@ -183,15 +180,15 @@ const ProcessVisualization = ({ results }) => {
           <p className="stat-value">{totalExecutionTime}s</p>
         </div>
         <div className="stat-box">
-              <h3 className="stat-title">Trocas de contexto ↔️</h3>
-              <p className="stat-value">{contextSwitches}</p>
-            </div>
+          <h3 className="stat-title">Trocas de contexto ↔️</h3>
+          <p className="stat-value">{contextSwitches}</p>
+        </div>
         {algorithm === "roundrobin" && (
-            <div className="stat-box">
-              <h3 className="stat-title">Quantum 🔋</h3>
-              <p className="stat-value">{quantum}s</p>
-            </div>
-        )} 
+          <div className="stat-box">
+            <h3 className="stat-title">Quantum 🔋</h3>
+            <p className="stat-value">{quantum}s</p>
+          </div>
+        )}
         <div className="stat-box">
           <h3 className="stat-title">Utilização do processador ⛈️</h3>
           <p className="stat-value">{cpuUtilization.toFixed(2)}%</p>
@@ -199,6 +196,10 @@ const ProcessVisualization = ({ results }) => {
       </div>
 
       <div className="table-wrapper">
+        <h2 className="title">
+          Processamento {algorithm === "sjf" ? "SJF" : "Round Robin"}
+          {algorithm === "roundrobin" && ` (Quantum = ${quantum}s)`}
+        </h2>
         <table className="process-table">
           <thead>
             <tr>
@@ -223,7 +224,7 @@ const ProcessVisualization = ({ results }) => {
 
       <div className="gantt-chart">
         <div className="gantt-numbers">
-          {Array.from({ length: totalExecutionTime+1 }).map((_, i) => (
+          {Array.from({ length: totalExecutionTime + 1 }).map((_, i) => (
             <div key={i} className="gantt-number">
               {i}
             </div>

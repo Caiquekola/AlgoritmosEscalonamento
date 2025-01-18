@@ -4,7 +4,7 @@ import ProcessRow from "./components/ProcessRow";
 import axios from "axios";
 import ProcessVisualization from "./components/ProcessVisualization";
 // import ResultsDisplay from "./components/ResultDisplay";
-import { calculateMetricsRR,calculateMetricsSJF } from "./hooks/algorithm/calculateMetrics";
+import { calculateMetricsRR, calculateMetricsSJF } from "./hooks/algorithm/calculateMetrics";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 import './index.css'
@@ -25,7 +25,7 @@ const App = () => {
       id: "P" + nextProcessId,
       tempoChegada: "",
       tempoExecucao: "",
-      prioridade: "",
+      //prioridade: "",
     };
     setProcesses([...processes, newProcess]);
     setNextProcessId(nextProcessId + 1);
@@ -49,17 +49,20 @@ const App = () => {
 
   const handleRun = async () => {
     const algoritmo = algorithm;
-    if(processes.length===0){
+    if (processes.length === 0) {
       return false;
     }
+
     try {
       const validProcesses = processes.filter(
         ({ tempoChegada, tempoExecucao, prioridade }) =>
-          parseInt(tempoChegada, 10) > 0 ||
-          parseInt(tempoExecucao, 10) > 0 ||
-          parseInt(prioridade, 10) > 0
+          parseInt(tempoChegada, 10) >= 0 &&
+          parseInt(tempoExecucao, 10) > 0
+        //|| parseInt(prioridade, 10) > 0
       );
-
+      if (validProcesses.length === 0) {
+        return false;
+      }
       const payload = {
         algoritmo,
         quantum: parseInt(quantum, 10),
@@ -79,7 +82,7 @@ const App = () => {
 
       // Agora calculamos as métricas no frontend
       var metrics;
-      console.log("Valid Processes ",validProcesses);
+      console.log("Valid Processes ", validProcesses);
       if (algorithm === "sjf") {
         metrics = calculateMetricsSJF(validProcesses);
       } else {
@@ -118,9 +121,7 @@ const App = () => {
             setQuantum={setQuantum}
             setProcesses={setProcesses}
           />
-          <button className="add-process-btn"  onClick={addProcess}>
-            ➕ Adicionar Processo
-          </button>
+
           <div className="process-list">
             {processes.map((process) => (
               <ProcessRow
@@ -131,9 +132,16 @@ const App = () => {
               />
             ))}
           </div>
-          <button className="run-btn" onClick={handleRun}>
-            Rodar Algoritmos
-          </button>
+          <div className="buttons">
+            <button className="add-process-btn" onClick={addProcess}>
+              ➕ Adicionar Processo
+            </button>
+            <button className="run-btn" onClick={handleRun}>
+              Rodar Algoritmos
+            </button>
+          </div>
+
+
         </div>
 
         {results && (

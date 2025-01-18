@@ -29,7 +29,7 @@ const ProcessRow = ({ process, removeProcess, setProcesses }) => {
         value={process.prioridade}
         onChange={(e) => updateProcess("prioridade", e.target.value)}
       /> */}
-      <button onClick={() => removeProcess(process.id)}>🗑️</button>
+      <button style={{backgroundColor:"red"}} onClick={() => removeProcess(process.id)}>🗑️</button>
     </div>
   );
 };
